@@ -1,3 +1,5 @@
+from banco import salvar_checagem, criar_tabela, listar_checagens
+
 import requests
 from fastapi import FastAPI
 
@@ -17,6 +19,7 @@ def checar_servico_real(url, limite_lento=800):
 
 
 app = FastAPI()
+criar_tabela()
 
 
 @app.get("/")
@@ -37,6 +40,12 @@ def status():
 
     for site in sites_para_checar:
         status = checar_servico_real(site["url"])
+        salvar_checagem(site["nome"], status)
         resultados.append({"nome": site["nome"], "status": status})
 
     return resultados
+
+
+@app.get("/historico")
+def historico():
+    return listar_checagens()
